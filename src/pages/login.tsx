@@ -10,9 +10,11 @@ const Login: NextPage = () => {
 
   const handleRedirect = () => {
     const userType = typeof window !== "undefined" && localStorage.getItem("userType");
-
+  
     if (userType === "admin") {
-      router.push("/dashboard"); // atualizado
+      router.push("/dashboard");
+    } else if (userType === "normal") {
+      router.push("/home"); // ou "/" se preferir
     } else {
       router.push("/");
     }
@@ -25,11 +27,12 @@ export default Login;
 
 export async function getServerSideProps({ req }: any) {
   const session = await getSession({ req });
+  const userType = req.cookies.userType;
 
-  if (session || req.cookies.userType === "admin") {
+  if (session && userType) {
     return {
       redirect: {
-        destination: req.cookies.userType === "admin" ? "/dashboard" : "/",
+        destination: userType === "admin" ? "/dashboard" : "/home", // ajuste aqui
         permanent: false,
       },
     };

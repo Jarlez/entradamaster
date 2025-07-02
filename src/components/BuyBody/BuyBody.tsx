@@ -27,22 +27,17 @@ const BuyBody: React.FC<Props> = ({ foto, titulo }) => {
     price: number
   ) => {
     const isAlreadySelected = selectedSeats.some(
-      (s) =>
-        s.sector === sector && s.row === row && s.seat === seat
+      (s) => s.sector === sector && s.row === row && s.seat === seat
     );
 
     if (isAlreadySelected) {
       setSelectedSeats((prev) =>
         prev.filter(
-          (s) =>
-            !(s.sector === sector && s.row === row && s.seat === seat)
+          (s) => !(s.sector === sector && s.row === row && s.seat === seat)
         )
       );
     } else {
-      setSelectedSeats((prev) => [
-        ...prev,
-        { sector, row, seat, price },
-      ]);
+      setSelectedSeats((prev) => [...prev, { sector, row, seat, price }]);
     }
   };
 
@@ -62,7 +57,13 @@ const BuyBody: React.FC<Props> = ({ foto, titulo }) => {
   }
 
   const handleDirectConfirmation = () => {
-    router.push("/login");
+    const userType = localStorage.getItem("userType");
+
+    if (userType === "user") {
+      router.push("/ConfirmationPage");
+    } else {
+      router.push("/login");
+    }
   };
 
   return (

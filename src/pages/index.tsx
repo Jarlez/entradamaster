@@ -2,6 +2,8 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
+import { useEffect, useState } from "react";
+
 
 import { trpc } from "../utils/trpc";
 
@@ -15,6 +17,8 @@ import Spinner from "../components/principal/loader/Spinner";
 
 const Home: NextPage = () => {
   const { data: session, status } = useSession();
+
+  const [userType, setUserType] = useState<string | null>(null);
 
   // const { data: user } = trpc.auth.getUserById.useQuery(sessionData?.user?.id);
 
@@ -34,7 +38,14 @@ const Home: NextPage = () => {
         <meta name="description" content="EntradaMaster" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <Header home={true} />
+      <Header home={true} buyPage={undefined} />
+
+      {userType === "user" && (
+        <div className="p-4 text-center text-xl font-semibold text-green-600">
+          ¡Bienvenido, usuario!
+        </div>
+      )}
+
 
       <main>
         <Hero />

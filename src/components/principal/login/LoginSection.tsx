@@ -1,160 +1,159 @@
-import React, { useState } from "react";
-import Image from "next/image";
-import Link from "next/link";
-import concierto from "../../../../public/images/concierto.jpg";
-import logo from "../../../../public/images/logo_white.png";
-import { FcGoogle } from "react-icons/fc";
-import { AiFillFacebook } from "react-icons/ai";
-import { signIn } from "next-auth/react";
-import { useFormik } from "formik";
-import loginValidate from "../../../lib/validate";
+import React, { useEffect, useRef } from "react";
 import { useRouter } from "next/router";
-import { useUserType } from "./UserTypeContext";
+import { FaFacebookF, FaTwitter, FaWhatsapp } from "react-icons/fa";
+import { CheckCircle } from "lucide-react";
+import { motion } from "framer-motion";
+import { QRCode } from "react-qrcode-logo";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
+import logo from "../../public/images/logo_white.png";
 
-const LoginSection: React.FC = () => {
-  const { setUserType } = useUserType();
+const ConfirmationPage: React.FC = () => {
   const router = useRouter();
-  const [isAdmin, setIsAdmin] = useState(false);
+  const qrRef = useRef<HTMLDivElement>(null);
 
-  const formik = useFormik({
-    initialValues: {
-      email: "",
-      password: "",
-    },
-    validate: loginValidate,
-    onSubmit,
-  });
+  const { evento, data, setor, fila, assento, codigo } = router.query;
 
-  async function onSubmit(values: { password: string; email: string }) {
-    if (
-      values.email === "admin@entradamaster.com" &&
-      values.password === "12345678"
-    ) {
-      setUserType("admin");
-      localStorage.setItem("userType", "admin");
-      document.cookie = "userType=admin";
-      router.push("/dashboard");
-    } else {
-      setUserType("user");
-      localStorage.setItem("userType", "user");
-      document.cookie = "userType=user";
-      router.push("/");
+  const ticketData = {
+    evento: (evento as string) || "Evento Desconocido",
+    data: (data as string) || "Fecha no especificada",
+    setor: (setor as string) || "-",
+    fila: (fila as string) || "-",
+    assento: (assento as string) || "-",
+    codigo: (codigo as string) || "XXXX-XXXX",
+  };
+
+  useEffect(() => {
+    const userType = localStorage.getItem("userType");
+    if (userType !== "user") {
+      router.push("/login");
     }
-  }
+  }, [router]);
+
+  const handleDownloadPDF = async () => {
+    if (!qrRef.current) return;
+
+    const canvas = await html2canvas(qrRef.current);
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF();
+    const logoImg = new Image();
+    logoImg.src = "/images/logo_new.png";
+
+    pdf.setFont("Helvetica", "bold");
+    pdf.setFontSize(18);
+    pdf.text("EntradaMaster", 20, 20);
+    pdf.setFontSize(14);
+    pdf.text(`Evento: ${ticketData.evento}`, 20, 40);
+    pdf.text(`Data: ${ticketData.data}`, 20, 50);
+    pdf.text(`Assento: Platea ${ticketData.setor} - Fila ${ticketData.fila} - Assento ${ticketData.assento}`, 20, 60);
+    pdf.text(`Código: ${ticketData.codigo}`, 20, 70);
+    pdf.addImage(imgData, "PNG", 20, 80, 80, 80);
+
+    pdf.save("entrada.pdf");
+  };
+
+  const share = (platform: string) => {
+    const url = encodeURIComponent("https://seusite.com/confirmation");
+    const text = encodeURIComponent("¡Acabo de comprar mi entrada! 🎟️");
+    let shareUrl = "";
+
+    switch (platform) {
+      case "facebook":
+        shareUrl = `https://www.facebook.com/sharer/sharer.php?u=${url}`;
+        break;
+      case "twitter":
+        shareUrl = `https://twitter.com/intent/tweet?text=${text}&url=${url}`;
+        break;
+      case "whatsapp":
+        shareUrl = `https://instagram.com/${text} ${url}`;
+        break;
+    }
+
+    window.open(shareUrl, "_blank");
+  };
 
   return (
-    <section className="flex flex-col lg:h-screen lg:flex-row">
-      <div className="relative z-0 flex h-[25rem] w-full items-center justify-center lg:h-screen lg:w-1/2">
-        <Image
-          src={concierto}
-          alt="biza"
-          layout="fill"
-          objectFit="cover"
-          quality={100}
-          className="-z-10 brightness-50 "
-        />
-        <Link href={"/"}>
-          <div className="absolute top-6 left-6 w-[5rem]">
-            <Image src={logo} alt="logo" />
+    <motion.div
+      className="flex min-h-screen items-center justify-center bg-gradient-to-br from-white to-gray-100 px-4 py-12"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.4 }}
+    >
+      <motion.div
+        className="w-full max-w-2xl rounded-3xl bg-white p-8 text-center shadow-2xl"
+        initial={{ y: 30, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.6 }}
+      >
+        <CheckCircle className="mx-auto mb-4 text-green-500" size={64} strokeWidth={1.8} />
+
+        <h1 className="mb-2 text-4xl font-extrabold text-[#FF5F00]">
+          ¡Compra realizada con éxito!
+        </h1>
+        <p className="mb-8 text-lg text-gray-700">
+          Gracias por tu compra. Tu entrada digital ya está lista. Mostrala en la puerta del evento.
+        </p>
+
+        <motion.div
+          className="mb-6 rounded-2xl border border-gray-200 bg-gray-50 p-6 shadow-md"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}
+        >
+          <div className="mb-2">
+            <img src="/images/logo_white.png" alt="Logo EntradaMaster" className="mx-auto h-10 object-contain" />
           </div>
-        </Link>
-        <div className="z-10 mx-auto w-[90%]">
-          <h2 className="text-5xl font-bold text-white lg:text-7xl">
-            Vive los conciertos.
-          </h2>
-        </div>
-      </div>
+          <h2 className="text-xl font-semibold">{ticketData.evento}</h2>
+          <p className="text-sm text-gray-500">{ticketData.data}</p>
+          <hr className="my-3" />
+          <p className="text-md font-medium text-gray-700">
+            Platea {ticketData.setor}
+          </p>
+          <p className="text-sm text-gray-500">
+            Fila {ticketData.fila} – Asiento {ticketData.assento}
+          </p>
 
-      <div className="flex flex-col items-center justify-center gap-6 bg-slate-100 px-5 py-10 lg:w-1/2">
-        <div className="formulario w-full rounded-[2rem] border bg-white p-5 py-10 shadow-lg lg:max-w-lg lg:px-14 lg:pb-14 2xl:max-w-2xl">
-          <h2 className="text-center text-3xl font-bold lg:text-4xl">
-            Iniciar sesión
-          </h2>
-
-          <form
-            className="mt-10 flex flex-col gap-5"
-            onSubmit={formik.handleSubmit}
-          >
-            <div className="flex flex-col gap-2">
-              <label className="text-xl font-bold text-primary-100" htmlFor="correo">
-                Correo Electrónico
-              </label>
-              <input
-                className="rounded-lg border-b"
-                type="email"
-                id="email"
-                placeholder="Tu correo aquí"
-                {...formik.getFieldProps("email")}
-              />
-              {formik.errors.email && formik.touched.email && (
-                <span className="-my-2 text-red-500">{formik.errors.email}</span>
-              )}
-            </div>
-
-            <div className="flex flex-col gap-2">
-              <label className="text-xl font-bold text-primary-100" htmlFor="contrasena">
-                Contraseña
-              </label>
-              <input
-                className="rounded-lg border-b"
-                type="password"
-                id="password"
-                placeholder="Tu contraseña aquí"
-                {...formik.getFieldProps("password")}
-              />
-              {formik.errors.password && formik.touched.password && (
-                <span className="-my-2 text-red-500">{formik.errors.password}</span>
-              )}
-            </div>
-
-            <div className="flex items-center gap-2">
-              <input
-                type="checkbox"
-                checked={isAdmin}
-                onChange={() => setIsAdmin(!isAdmin)}
-                className="accent-[#FF5F00]"
-              />
-              <label className="text-sm text-gray-700">Entrar como administrador</label>
-            </div>
-
-            <button
-              type="submit"
-              className="rounded-lg bg-[#FF5F00] py-3 text-xl font-bold text-white"
-            >
-              Ingresar
-            </button>
-          </form>
-
-          <div className="flex flex-col p-9">
-            <button
-              className="btn-warning btn my-2 flex bg-white"
-              onClick={() => signIn("google", { callbackUrl: "/" })}
-            >
-              <div className="flex items-center justify-center">
-                <FcGoogle className="mr-2 text-4xl" />
-                <span className="text-left text-black">Iniciar Sesión con Google</span>
-              </div>
-            </button>
-            <button
-              className="btn-warning btn my-2 bg-[#3b5998] text-white"
-              onClick={() => signIn("facebook", { callbackUrl: "/" })}
-            >
-              <div className="flex items-center justify-center">
-                <AiFillFacebook className="mr-2 text-4xl" />
-                <span className="text-left">Iniciar Sesión con Facebook</span>
-              </div>
-            </button>
+          <div ref={qrRef} className="my-4 flex justify-center">
+            <QRCode value={ticketData.codigo} size={140} ecLevel="H" />
           </div>
 
-          <Link href="/register">
-            <div className="text-center text-[#FF5F00]">
-              ¿Todavía no tienes una cuenta?
-            </div>
-          </Link>
+          <div className="rounded bg-[#FF5F00] py-2 text-white font-semibold">
+            Código: {ticketData.codigo}
+          </div>
+        </motion.div>
+
+        <motion.button
+          whileTap={{ scale: 0.98 }}
+          whileHover={{ scale: 1.02 }}
+          onClick={handleDownloadPDF}
+          className="mb-8 w-full rounded-full bg-[#FF5F00] py-3 text-lg font-bold text-white shadow-md transition"
+        >
+          📥 Descargar entrada
+        </motion.button>
+
+        <div className="mb-2 text-sm text-gray-600">
+          ¿Querés compartir tu emoción?
         </div>
-      </div>
-    </section>
+        <motion.div
+          className="flex justify-center gap-5"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.4 }}
+        >
+          <button onClick={() => share("facebook")} aria-label="Facebook">
+            <FaFacebookF size={24} className="text-[#3b5998] hover:scale-110 transition-transform" />
+          </button>
+          <button onClick={() => share("twitter")} aria-label="Twitter">
+            <FaTwitter size={24} className="text-[#1da1f2] hover:scale-110 transition-transform" />
+          </button>
+          <button onClick={() => share("whatsapp")} aria-label="Whatsapp">
+            <FaWhatsapp size={24} className="text-[#25d366] hover:scale-110 transition-transform" />
+          </button>
+        </motion.div>
+      </motion.div>
+    </motion.div>
   );
 };
 
-export default LoginSection;
+export default ConfirmationPage;

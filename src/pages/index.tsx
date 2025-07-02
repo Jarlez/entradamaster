@@ -2,8 +2,7 @@ import { type NextPage } from "next";
 import Head from "next/head";
 import Link from "next/link";
 import { signIn, signOut, useSession } from "next-auth/react";
-import { useRouter } from "next/router";
-import { useEffect } from "react";
+
 import { trpc } from "../utils/trpc";
 
 import Categorias from "../components/principal/categorias/Categorias";
@@ -16,13 +15,9 @@ import Spinner from "../components/principal/loader/Spinner";
 
 const Home: NextPage = () => {
   const { data: session, status } = useSession();
-  const router = useRouter();
+
   // const { data: user } = trpc.auth.getUserById.useQuery(sessionData?.user?.id);
-  useEffect(() => {
-    if (typeof window !== "undefined" && window.location.hash) {
-      router.replace("/", undefined, { shallow: true });
-    }
-  }, []);
+
   if (status === "loading") {
     return (
       <div className="flex h-[100vh] w-full items-center justify-center">

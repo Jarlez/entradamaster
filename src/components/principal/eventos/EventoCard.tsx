@@ -15,7 +15,7 @@ interface Props {
 
 const EventoCard = ({ artist, fecha, ubicacion, ciudad, foto }: Props) => {
   return (
-    <article className="relative max-w-md rounded-xl overflow-hidden shadow-md">
+    <article className="relative max-w-md">
       <Link
         href={{
           pathname: "eventdetail/[id]",
@@ -32,7 +32,7 @@ const EventoCard = ({ artist, fecha, ubicacion, ciudad, foto }: Props) => {
           },
         }}
       >
-        <Image src={foto} alt="Foto" width={500} height={500} className="w-full h-full object-cover rounded-xl"/>
+        <Image src={foto} alt="Foto" width={500} height={500} />
 
         <h3 className="2xl:text:2xl absolute top-5 left-5 text-2xl font-bold text-white lg:left-3 lg:text-xl">
           {artist}

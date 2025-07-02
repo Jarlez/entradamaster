@@ -1,15 +1,9 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { type NextPage } from "next";
-import { useRouter } from "next/router";
-import { getSession } from "next-auth/react";
 import CheckoutContent from "../../components/checkout/CheckoutContent";
 import Footer from "../../components/principal/footer/Footer";
 import Header from "../../components/principal/header/Header";
-
-
-import { StaticImageData } from "next/image";
-
-import Image from "next/image";
+import sampleImage from "../../public/sample.jpg";
 
 interface Props {
   title: string;
@@ -17,23 +11,9 @@ interface Props {
   sector: string;
   cant: number;
   picture: string;
-  loggedIn: boolean;
 }
 
-const Checkout: NextPage<Props> = ({ title, price, sector, cant, picture, loggedIn }) => {
-  const router = useRouter();
-
-  useEffect(() => {
-    if (loggedIn) {
-    
-      const timer = setTimeout(() => {
-        router.push("/confirmation");
-      }, 3000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [loggedIn, router]);
-
+const Checkout: NextPage<Props> = ({ title, price, sector, cant, picture }) => {
   return (
     <div>
       <Header buyPage={true} home={true} />
@@ -53,24 +33,27 @@ const Checkout: NextPage<Props> = ({ title, price, sector, cant, picture, logged
 
 export default Checkout;
 
-export async function getServerSideProps(context: any) {
-  const { req } = context;
-  const session = await getSession({ req });
-  
-  if (!session) {
-    return {
-      redirect: {
-        destination: "/login",
-        permanent: false,
-      },
-    };
-  }
+// export async function getServerSideProps(context: any) {
+//   const { req } = context;
+//   const session = await getSession({ req });
 
-  return {
-    props: {
-      title: context.query.title || "",
-      picture: "/sample.jpg",
-      loggedIn: true,
-    },
-  };
-}
+//   if (!session) {
+//     return {
+//       redirect: {
+//         destination: "/login",
+//         permanent: false,
+//       },
+//     };
+//   }
+
+//   return {
+//     props: {
+//       title: context.query.title || "",
+//       price: context.query.price || 0,
+//       sector: context.query.sector || "",
+//       cant: context.query.cant || 1,
+//       picture: context.query.picture || "",
+//       loggedIn: true,
+//     },
+//   };
+// }

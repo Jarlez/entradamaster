@@ -17,16 +17,18 @@ interface EventMapProps {
   mapConfig: MapConfig;
   onSelect: (sector: string, row: number, seat: number, price: number) => void;
   selectedSeats: { sector: string; row: number; seat: number }[];
-  maxReached: boolean; // ✅ nova prop
 }
 
 export const EventMap: React.FC<EventMapProps> = ({
   mapConfig,
   onSelect,
   selectedSeats,
-  maxReached,
 }) => {
-  const isSeatSelected = (sector: string, row: number, seat: number) =>
+  const isSeatSelected = (
+    sector: string,
+    row: number,
+    seat: number
+  ) =>
     selectedSeats.some(
       (s) => s.sector === sector && s.row === row && s.seat === seat
     );
@@ -50,14 +52,17 @@ export const EventMap: React.FC<EventMapProps> = ({
                   const selected = isSeatSelected(sec.id, row, seat);
                   return (
                     <button
-                      disabled={maxReached && !selected} // ✅ aqui a regra
                       key={seat}
-                      className={`h-8 w-8 rounded transition 
-    ${selected ? "bg-green-500 text-white" : "bg-gray-200"}
-    ${maxReached && !selected ? "cursor-not-allowed opacity-50" : ""}
-  `}
+                      className={`h-8 w-8 rounded ${
+                        selected ? "bg-green-500 text-white" : "bg-gray-200"
+                      }`}
                       onClick={() =>
-                        onSelect(sec.id, row, seat, sec.pricesByRow[row] ?? 0)
+                        onSelect(
+                          sec.id,
+                          row,
+                          seat,
+                          sec.pricesByRow[row] ?? 0
+                        )
                       }
                     >
                       {seat}

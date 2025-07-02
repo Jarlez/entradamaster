@@ -2,17 +2,13 @@ import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import style from "./Header.module.css";
-import flatpickr from "flatpickr";
-import "flatpickr/dist/flatpickr.min.css";
+import flatpickr from 'flatpickr';
+import 'flatpickr/dist/flatpickr.min.css';
 
 import logo from "../../../../public/images/logo_new.png";
 
 import { FiFacebook } from "react-icons/fi";
-import {
-  AiOutlineClose,
-  AiOutlineInstagram,
-  AiOutlineUser,
-} from "react-icons/ai";
+import { AiOutlineClose, AiOutlineInstagram, AiOutlineUser } from "react-icons/ai";
 import { MdOutlineExitToApp, MdNotificationsNone } from "react-icons/md";
 import { AiOutlineSearch } from "react-icons/ai";
 import { HiMenuAlt3 } from "react-icons/hi";
@@ -22,6 +18,7 @@ import Notification from "./Notification";
 import { useUserType } from "../login/UserTypeContext";
 import { useRouter } from "next/router";
 
+
 interface Props {
   home: boolean | undefined;
   buyPage: boolean | undefined;
@@ -30,51 +27,31 @@ interface Props {
 const HeaderComponent = ({ home, buyPage }: Props) => {
   const router = useRouter();
 
-  const handleLogout = () => {
-    signOut();
+  const handleLogout = async () => {
+    localStorage.clear();
+    await signOut({
+      callbackUrl: "/",
+    });
   };
-
-  const [cidade, setCidade] = useState("");
+  
+  
+  const [cidade, setCidade] = useState(""); 
   const [dataSelecionada, setDataSelecionada] = useState("");
   // Removed unused state variable 'data'
-  const datePickerRef = useRef<HTMLInputElement>(null);
+  const datePickerRef = useRef<HTMLInputElement>(null); 
 
   const cidades = [
-    "Buenos Aires",
-    "Córdoba",
-    "Rosario",
-    "Mendoza",
-    "La Plata",
-    "San Miguel de Tucumán",
-    "Mar del Plata",
-    "Salta",
-    "Santa Fe",
-    "San Juan",
-    "Resistencia",
-    "Neuquén",
-    "Santiago del Estero",
-    "Corrientes",
-    "Bahía Blanca",
-    "San Salvador de Jujuy",
-    "Posadas",
-    "Paraná",
-    "Formosa",
-    "San Luis",
-    "La Rioja",
-    "Rio Gallegos",
-    "Comodoro Rivadavia",
-    "San Fernando del Valle de Catamarca",
-    "Trelew",
-    "Ushuaia",
-    "Bariloche",
-    "Villa María",
-    "Concordia",
-    "Rafaela",
-    "Pergamino",
+    "Buenos Aires", "Córdoba", "Rosario", "Mendoza", "La Plata", "San Miguel de Tucumán", 
+    "Mar del Plata", "Salta", "Santa Fe", "San Juan", "Resistencia", "Neuquén", 
+    "Santiago del Estero", "Corrientes", "Bahía Blanca", "San Salvador de Jujuy", 
+    "Posadas", "Paraná", "Formosa", "San Luis", "La Rioja", "Rio Gallegos", 
+    "Comodoro Rivadavia", "San Fernando del Valle de Catamarca", "Trelew", 
+    "Ushuaia", "Bariloche", "Villa María", "Concordia", "Rafaela", "Pergamino"
   ]; // Lista de cidades
 
+
   const handleNav = () => {
-    setNav(!nav);
+    setNav(!nav); 
   };
 
   const [nav, setNav] = useState(false);
@@ -99,17 +76,17 @@ const HeaderComponent = ({ home, buyPage }: Props) => {
   useEffect(() => {
     const cidadeSalva = localStorage.getItem("cidade");
     if (cidadeSalva) setCidade(cidadeSalva);
-
+  
     const dataSalva = localStorage.getItem("dataSelecionada");
     if (dataSalva) setDataSelecionada(dataSalva);
   }, []);
-
+  
   // Salvar cidade no localStorage ao mudar
   const handleCidadeChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     setCidade(e.target.value);
     localStorage.setItem("cidade", e.target.value);
   };
-
+  
   // Salvar data no localStorage ao mudar
   useEffect(() => {
     if (datePickerRef.current) {
@@ -132,10 +109,9 @@ const HeaderComponent = ({ home, buyPage }: Props) => {
   return (
     <>
       <header id="inicio" className={`${style.header}`}>
-
         <div className={style.container_1}>
           <h5>
-            {new Date().toLocaleDateString("es-AR", {
+          {new Date().toLocaleDateString("es-AR", {
               day: "numeric",
               month: "short",
               year: "numeric",
@@ -250,13 +226,13 @@ const HeaderComponent = ({ home, buyPage }: Props) => {
                 {router.pathname === "/" && (
                   <nav className={style.navigation}>
                     <Link href="/">Inicio</Link>
-                    <Link href="#eventos-hoy">Eventos hoy</Link>
-                    <Link href="#eventos">Artistas</Link>
-                    <Link href="#categorias">Categorías</Link>
+                    <Link href="#eventos-hoy">Eventos hoy</Link> 
+                    <Link href="#eventos">Artistas</Link> 
+                    <Link href="#categorias">Categorías</Link> 
                   </nav>
                 )}
                 <div className="hidden sm:block">
-                  <div className={`${style.search_bar} ${style.form_element}`}>
+                  <div className={`${style.search_bar}`}>
                     <input
                       type="text"
                       name="search"
@@ -269,22 +245,23 @@ const HeaderComponent = ({ home, buyPage }: Props) => {
                 </div>
               </>
             ) : null}
-            <select
-              value={cidade}
-              onChange={handleCidadeChange}
-              className={`${style.cidade_select} ${style.form_element}`}
-            >
-              <option value="">Seleccionar ubicación</option>
-              {cidades.map((cidade) => (
-                <option key={cidade} value={cidade}>
-                  {cidade}
-                </option>
-              ))}
-            </select>
           </div>
 
+          <select
+            value={cidade}
+            onChange={handleCidadeChange}
+            className={`${style.cidade_select}`}
+          >
+            <option value="">Seleccionar ubicación</option>
+            {cidades.map((cidade) => (
+              <option key={cidade} value={cidade}>
+                {cidade}
+              </option>
+            ))}
+          </select>
+
           {/* Botão de filtro por data */}
-          {/* <input
+          <input
             ref={datePickerRef}
             type="text"
             className={`${style.data_input}`}
@@ -292,7 +269,7 @@ const HeaderComponent = ({ home, buyPage }: Props) => {
             disabled={!cidade}
             value={dataSelecionada ? new Date(dataSelecionada).toLocaleDateString() : ""} // Mostra a data formatada
             readOnly // flatpickr controla o valor
-          /> */}
+          />
 
           <div className={style.right_container}>
             {userType === "admin" ? (
@@ -357,7 +334,7 @@ const HeaderComponent = ({ home, buyPage }: Props) => {
                         <li>
                           <Link href={"/profile"}>Perfil</Link>
                         </li>
-                        <li onClick={() => signOut()}>
+                        <li onClick={handleLogout}>
                           <span>Cerrar Sesión</span>
                         </li>
                       </ul>
@@ -508,18 +485,18 @@ const HeaderComponent = ({ home, buyPage }: Props) => {
                       xmlns="http://www.w3.org/2000/svg"
                     >
                       <path
-                        d="M18 6L6 18"
-                        stroke="#4B5563"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      d="M18 6L6 18"
+                      stroke="#4B5563"
+                      strokeWidth="1.25"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       />
                       <path
-                        d="M6 6L18 18"
-                        stroke="#4B5563"
-                        strokeWidth="1.25"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
+                      d="M6 6L18 18"
+                      stroke="#4B5563"
+                      strokeWidth="1.25"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
                       />
                     </svg>
                   </button>

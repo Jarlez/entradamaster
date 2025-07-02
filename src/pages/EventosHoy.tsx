@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { Pagination } from "swiper";
 import { Swiper, SwiperSlide } from "swiper/react";
 import Link from "next/link";
-import HoyCard from '../components/principal/eventos_hoy/HoyCard';
+import HoyCard from "./HoyCard";
 import { useScrollToHash } from "../hooks/useScrollToHash";
 
 import "swiper/css";
@@ -11,7 +11,7 @@ import "swiper/css/pagination";
 import queen from "../../../../public/images/queen.jpg";
 import dante from "../../../../public/images/dante.jpg";
 import cuarteto from "../../../../public/images/cuarteto.jpg";
-import { hoyCard } from "../data";
+import { hoyCard } from "../../../data";
 
 export default function EventosHoy() {
   useScrollToHash();

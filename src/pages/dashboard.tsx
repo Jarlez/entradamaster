@@ -1,27 +1,15 @@
 import React from "react";
-import DashboardContent from "../components/dashboard/DashboardContent";
-import { NextPage } from "next";
+import dynamic from "next/dynamic";
 
-const Dashboard: NextPage = () => {
-  return (
-    <div>
-      <DashboardContent />
-    </div>
-  );
+const DashboardContent = dynamic(
+  () => import("../components/dashboard/DashboardContent"),
+  {
+    ssr: false,
+  }
+);
+
+const DashboardPage = () => {
+  return <DashboardContent />;
 };
 
-export async function getServerSideProps({ req }: any) {
-  if (req.cookies.userType === "admin") {
-    return {
-      props: {},
-    };
-  }
-  return {
-    redirect: {
-      destination: "/",
-      permanent: false,
-    },
-  };
-}
-
-export default Dashboard;
+export default DashboardPage;

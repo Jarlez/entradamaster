@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import concierto from "../../../../public/images/concierto.jpg";
@@ -14,6 +14,7 @@ import { useUserType } from "./UserTypeContext";
 const LoginSection: React.FC = () => {
   const { setUserType } = useUserType();
   const router = useRouter();
+  const [isAdmin, setIsAdmin] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -24,28 +25,21 @@ const LoginSection: React.FC = () => {
     onSubmit,
   });
 
-  console.log(formik.errors);
-
   async function onSubmit(values: { password: string; email: string }) {
     if (
-      values.email == "admin@entradamaster.com" &&
-      values.password == "12345678"
+      values.email === "admin@entradamaster.com" &&
+      values.password === "12345678"
     ) {
       setUserType("admin");
+      localStorage.setItem("userType", "admin");
+      document.cookie = "userType=admin";
       router.push("/dashboard");
     } else {
-      formik.setErrors({ email: "Correo o contraseña incorrectos" });
+      setUserType("user");
+      localStorage.setItem("userType", "user");
+      document.cookie = "userType=user";
+      router.push("/");
     }
-
-    // const status = await signIn("credentials", {
-    //   redirect: false,
-    //   email: values.email,
-    //   password: values.password,
-    //   callbackUrl: "/",
-    // });
-
-    // if (status!.ok) router.push(status!.url!);
-    return null;
   }
 
   return (
@@ -59,13 +53,11 @@ const LoginSection: React.FC = () => {
           quality={100}
           className="-z-10 brightness-50 "
         />
-
         <Link href={"/"}>
           <div className="absolute top-6 left-6 w-[5rem]">
             <Image src={logo} alt="logo" />
           </div>
         </Link>
-
         <div className="z-10 mx-auto w-[90%]">
           <h2 className="text-5xl font-bold text-white lg:text-7xl">
             Vive los conciertos.
@@ -84,10 +76,7 @@ const LoginSection: React.FC = () => {
             onSubmit={formik.handleSubmit}
           >
             <div className="flex flex-col gap-2">
-              <label
-                className="text-xl font-bold text-primary-100"
-                htmlFor="correo"
-              >
+              <label className="text-xl font-bold text-primary-100" htmlFor="correo">
                 Correo Electrónico
               </label>
               <input
@@ -97,21 +86,15 @@ const LoginSection: React.FC = () => {
                 placeholder="Tu correo aquí"
                 {...formik.getFieldProps("email")}
               />
-              {formik.errors.email && formik.touched.email ? (
-                <span className="-my-2 text-red-500">
-                  {formik.errors.email}
-                </span>
-              ) : null}
+              {formik.errors.email && formik.touched.email && (
+                <span className="-my-2 text-red-500">{formik.errors.email}</span>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
-              <label
-                className="text-xl font-bold text-primary-100 "
-                htmlFor="contrasena"
-              >
+              <label className="text-xl font-bold text-primary-100" htmlFor="contrasena">
                 Contraseña
               </label>
-
               <input
                 className="rounded-lg border-b"
                 type="password"
@@ -119,48 +102,52 @@ const LoginSection: React.FC = () => {
                 placeholder="Tu contraseña aquí"
                 {...formik.getFieldProps("password")}
               />
-              {formik.errors.password && formik.touched.password ? (
-                <span className="-my-2 text-red-500">
-                  {formik.errors.password}
-                </span>
-              ) : null}
+              {formik.errors.password && formik.touched.password && (
+                <span className="-my-2 text-red-500">{formik.errors.password}</span>
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={isAdmin}
+                onChange={() => setIsAdmin(!isAdmin)}
+                className="accent-[#FF5F00]"
+              />
+              <label className="text-sm text-gray-700">Entrar como administrador</label>
             </div>
 
             <button
               type="submit"
-              className="rounded-lg bg-primary-100 py-3 text-xl font-bold text-white"
+              className="rounded-lg bg-[#FF5F00] py-3 text-xl font-bold text-white"
             >
               Ingresar
             </button>
           </form>
-          <div className="flex flex-col p-9 ">
+
+          <div className="flex flex-col p-9">
             <button
               className="btn-warning btn my-2 flex bg-white"
-              onClick={() => {
-                signIn("google", { callbackUrl: "/" });
-              }}
+              onClick={() => signIn("google", { callbackUrl: "/" })}
             >
               <div className="flex items-center justify-center">
                 <FcGoogle className="mr-2 text-4xl" />
-                <span className="text-left text-black">
-                  Iniciar Sesion con Google
-                </span>
+                <span className="text-left text-black">Iniciar Sesión con Google</span>
               </div>
             </button>
             <button
-              className="btn-warning btn btn my-2 bg-[#3b5998] text-white"
-              onClick={() => {
-                signIn("facebook", { callbackUrl: "/" });
-              }}
+              className="btn-warning btn my-2 bg-[#3b5998] text-white"
+              onClick={() => signIn("facebook", { callbackUrl: "/" })}
             >
               <div className="flex items-center justify-center">
                 <AiFillFacebook className="mr-2 text-4xl" />
-                <span className="text-left">Iniciar Sesion con Facebook</span>
+                <span className="text-left">Iniciar Sesión con Facebook</span>
               </div>
             </button>
           </div>
+
           <Link href="/register">
-            <div className="text-center text-primary-100">
+            <div className="text-center text-[#FF5F00]">
               ¿Todavía no tienes una cuenta?
             </div>
           </Link>

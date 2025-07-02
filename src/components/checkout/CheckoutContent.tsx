@@ -38,7 +38,7 @@ const CheckoutContent = ({ title, price, sector, cant, picture }: Props) => {
                     <div className="relative h-16 w-16 overflow-hidden rounded-lg border border-gray-200 bg-gray-50">
                       <Image
                         src={picture}
-                        alt="Imagem"
+                        alt="Imagen"
                         fill
                         className="object-cover"
                       />

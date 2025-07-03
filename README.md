@@ -59,11 +59,12 @@
 
 ### 📦 Pré-requisitos
 
-- Node.js `v18+`
-- PostgreSQL (pode ser local ou Supabase)
-- Yarn ou npm
-- Conta no Stripe / MercadoPago (para testes)
-- `OpenSSL` (para gerar JWT secrets, se necessário)
+- **Node.js `v18+`**
+- **PostgreSQL** (pode ser local ou via [Supabase](https://supabase.com))
+- **Yarn** ou **npm**
+- Conta no **Stripe** (para testes de pagamento)
+- **Stripe CLI** instalado (para testes de webhook)
+- `OpenSSL` (caso precise gerar segredos manualmente)
 
 ---
 
@@ -77,13 +78,15 @@ cd entradamaster
 # Instale as dependências
 npm install
 
-# Execute a primeira migração
+# Execute as migrações do banco de dados
 npx prisma migrate dev --name init
 
-# Gere os arquivos do cliente Prisma
+# Gere o client do Prisma
 npx prisma generate
 
-# Rodar o servidor local
+# Inicie o servidor local
 npm run dev
 
-Acesse: http://localhost:3000
+# Acesse no navegador:
+http://localhost:3000
+

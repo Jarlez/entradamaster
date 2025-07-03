@@ -33,15 +33,14 @@
 - [x] Criação e listagem de pedidos
 
 ### 💵 Etapa 6 - Pagamentos
-- [x] Suporte a múltiplos provedores (`STRIPE`, `MERCADOPAGO`, `PAGOFACIL`, `RAPIPAGO`)
-- [x] Registro de resposta bruta (webhook-safe)
-
-### 📄 Etapa 7 - Faturas
-- [x] Geração de faturas em PDF com `PDFKit`
-- [x] Armazenamento em disco local
-- [x] Consulta por `orderId`
-
----
+- [x] Suporte ao provedor `STRIPE` com `PaymentIntent` criado e client secret retornado
+- [x] Webhook público implementado em `/api/webhooks/stripe` com verificação de assinatura (`STRIPE_WEBHOOK_SECRET`)
+- [x] Eventos `payment_intent.succeeded` tratados com:
+  - Atualização de status do pagamento para `APPROVED`
+  - Atualização do pedido (`order.status = PAID`)
+  - Geração de ingressos via `generateTicketAssets` (com QR Code)
+- [x] Logger estruturado (`pino`) para rastreabilidade dos eventos
+- [x] Integração com o Stripe testada localmente via CLI (`stripe listen`)
 
 ## ⚙️ Tecnologias Principais
 

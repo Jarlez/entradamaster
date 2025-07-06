@@ -2,14 +2,16 @@ import { z } from "zod";
 
 export const createEventSchema = z.object({
   name: z.string().min(3),
-  description: z.string().min(10),
-  city: z.string(),
-  theater: z.string(),
-  price: z.number().positive(),
-  date: z.string().refine((val) => !isNaN(Date.parse(val)), { message: "Invalid date" }),
-  saleStart: z.string().optional(),
-  saleEnd: z.string().optional(),
-  capacity: z.number().int().positive().optional(),
+  slug: z.string().min(3),
+  description: z.string().optional(),
+  city: z.string().min(2),
+  theater: z.string().min(2),
+  price: z.number().min(0),
+  date: z.string().datetime(),
+  saleStart: z.string().datetime(),
+  saleEnd: z.string().datetime(),
+  capacity: z.number().min(1),
+  organizerId: z.string().cuid("Invalid organizer ID"),
 });
 
 export type CreateEventInput = z.infer<typeof createEventSchema>;

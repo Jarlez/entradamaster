@@ -6,10 +6,12 @@ const createEventSchema = z.object({
   name: z.string().min(3),
   slug: z.string().min(3),
   description: z.string().optional(),
-  startsAt: z.string().datetime(),
-  endsAt: z.string().datetime(),
-  salesStartsAt: z.string().datetime(),
-  salesEndsAt: z.string().datetime(),
+  city: z.string().min(2),
+  theater: z.string().min(2),
+  price: z.number().positive(),
+  date: z.string().datetime(),
+  saleStart: z.string().datetime(),
+  saleEnd: z.string().datetime(),
   capacity: z.number().min(1),
   organizerId: z.string().cuid("Invalid organizer ID"),
 });
@@ -23,11 +25,11 @@ export default async function createEventHandler(req: NextApiRequest, res: NextA
   try {
     const input = createEventSchema.parse(req.body);
 
-    const organizerExists = await prisma.user.findUnique({
+    const organizer = await prisma.user.findUnique({
       where: { id: input.organizerId },
     });
 
-    if (!organizerExists || organizerExists.role !== "ORGANIZER") {
+    if (!organizer || organizer.role !== "ORGANIZER") {
       return res.status(400).json({ message: "Invalid organizer" });
     }
 
@@ -35,13 +37,18 @@ export default async function createEventHandler(req: NextApiRequest, res: NextA
       data: {
         name: input.name,
         slug: input.slug,
-        description: input.description,
-        startsAt: new Date(input.startsAt),
-        endsAt: new Date(input.endsAt),
-        salesStartsAt: new Date(input.salesStartsAt),
-        salesEndsAt: new Date(input.salesEndsAt),
+        description: input.description ?? "",
+        city: input.city,
+        theater: input.theater,
+        price: input.price,
+        date: new Date(input.date),
+        saleStart: new Date(input.saleStart),
+        saleEnd: new Date(input.saleEnd),
         capacity: input.capacity,
-        organizerId: input.organizerId,
+        status: "DRAFT",
+        user: {
+          connect: { id: input.organizerId },
+        },
       },
     });
 
@@ -51,7 +58,7 @@ export default async function createEventHandler(req: NextApiRequest, res: NextA
       return res.status(400).json({ message: "Validation error", errors: err.errors });
     }
 
-    console.error("Create event error:", err);
+    console.error("❌ Create event error:", err);
     return res.status(500).json({ message: "Internal Server Error" });
   }
 }

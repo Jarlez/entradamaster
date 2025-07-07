@@ -105,12 +105,11 @@ model Event {
   description String
   city        String
   theater     String
-  price       Float
   date        DateTime
   saleStart   DateTime    @default(now())
   saleEnd     DateTime    @default(now())
   capacity    Int         @default(0)
-  slug        String      @unique @default("")
+  slug        String      @unique
   status      EventStatus @default(DRAFT)
   userId      String
   user        User        @relation("OrganizerEvents", fields: [userId], references: [id])

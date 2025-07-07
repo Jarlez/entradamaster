@@ -15,9 +15,7 @@ import {
 } from "../trpc";
 import { TRPCError } from "@trpc/server";
 
-/**
- * 🔒 Utility: Require organizer role
- */
+// Utility: Require organizer role
 function requireOrganizer(role: string) {
   if (role !== "ORGANIZER") {
     throw new TRPCError({
@@ -27,41 +25,36 @@ function requireOrganizer(role: string) {
   }
 }
 
-/**
- * 📅 Common date validator
- */
+// Common date validator
 const dateSchema = z.string().refine((val) => !isNaN(Date.parse(val)), {
   message: "Invalid date format.",
 });
 
-/**
- * 🎟 Ticket category schema
- */
+// Ticket category schema
 const ticketCategorySchema = z.object({
   title: z.string().min(1, "Category title is required."),
   price: z.number().positive("Price must be positive."),
   stock: z.number().int().positive("Stock must be a positive integer."),
 });
 
-/**
- * 📦 Base event schema (shared)
- */
+// Base event schema (shared)
 const baseEventSchema = z.object({
   name: z.string().min(3, "Event name must be at least 3 characters."),
   description: z.string().min(10, "Description must be at least 10 characters."),
   city: z.string().min(2, "City is required."),
   theater: z.string().min(2, "Theater is required."),
-  price: z.number().positive("Price must be positive."),
   date: dateSchema,
   saleStart: dateSchema,
   saleEnd: dateSchema,
   capacity: z.number().int().positive("Capacity must be a positive integer."),
-  ticketCategories: z.array(ticketCategorySchema).min(1, "At least one ticket category is required."),
+  ticketCategories: z
+    .array(ticketCategorySchema)
+    .min(1, "At least one ticket category is required."),
 });
 
-/**
- * 🧾 createEvent schema with custom date validation
- */
+
+// createEvent schema with custom date validation
+
 const createEventSchema = baseEventSchema
   .refine((data) => new Date(data.saleStart) < new Date(data.saleEnd), {
     message: "Sale start must be before sale end.",
@@ -72,16 +65,14 @@ const createEventSchema = baseEventSchema
     path: ["saleEnd"],
   });
 
-/**
- * ✏️ updateEvent schema
- */
+
+// updateEvent schema
+
 const updateEventSchema = baseEventSchema.extend({
   eventId: z.string().cuid("Invalid event ID."),
 });
 
-/**
- * 🚦 Event Router
- */
+// Event Router
 export const eventRouter = createTRPCRouter({
   createEvent: protectedProcedure
     .input(createEventSchema)
@@ -113,6 +104,8 @@ export const eventRouter = createTRPCRouter({
 
   getAllEvents: publicProcedure.query(() => {
     return getAllEventsService();
+  // 🔒 Opcional: retornar apenas eventos publicados
+  // return getAllEventsService({ status: "PUBLISHED" });
   }),
 
   getEventById: publicProcedure

@@ -1,8 +1,9 @@
-// src/server/jobs/expireOldOrders.job.ts
+// src/jobs/expireOldOrders.job.ts
 
 import { prisma } from "@/server/db/client";
 import { subMinutes } from "date-fns";
 
+// 🔁 Atualiza status de pedidos PENDING criados há mais de 10 min para EXPIRED
 export const expireOldOrdersJob = async () => {
   const threshold = subMinutes(new Date(), 10);
 

@@ -21,6 +21,6 @@
     },
     "types": ["next-auth"]
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs"],
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", "**/*.cjs", "**/*.mjs", "src/jobs/expireOldOrders.job.ts"],
   "exclude": ["node_modules"]
 }

@@ -20,11 +20,11 @@ export const createUserSchema = z
         "Password must contain both letters and numbers"
       ),
 
-    confirmPassword: z
+    cPassword: z
       .string({ required_error: "Please confirm your password" }),
   })
-  .refine((data) => data.password === data.confirmPassword, {
-    path: ["confirmPassword"],
+  .refine((data) => data.password === data.cPassword, {
+    path: ["cPassword"],
     message: "Passwords do not match",
   });
 

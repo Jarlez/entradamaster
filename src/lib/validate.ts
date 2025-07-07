@@ -28,13 +28,13 @@ export function registerValidate(values: {
   name: string;
   email: string;
   password: string;
-  cpassword: string;
+  cPassword: string;
 }) {
   const errors: {
     name?: string;
     email?: string;
     password?: string;
-    cpassword?: string;
+    cPassword?: string;
   } = {};
 
   // Validación de nombre de usuario
@@ -63,12 +63,12 @@ export function registerValidate(values: {
   }
 
   // Validación de confirmación de contraseña
-  if (!values.cpassword) {
-    errors.cpassword = "Requerido";
-  } else if (values.password !== values.cpassword) {
-    errors.cpassword = "Las contraseñas no coinciden";
-  } else if (values.cpassword.includes(" ")) {
-    errors.cpassword = "Contraseña de confirmación inválida";
+  if (!values.cPassword) {
+    errors.cPassword = "Requerido";
+  } else if (values.password !== values.cPassword) {
+    errors.cPassword = "Las contraseñas no coinciden";
+  } else if (values.cPassword.includes(" ")) {
+    errors.cPassword = "Contraseña de confirmación inválida";
   }
 
   return errors;

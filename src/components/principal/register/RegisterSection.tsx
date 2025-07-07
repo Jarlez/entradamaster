@@ -8,7 +8,7 @@ import { registerValidate } from "../../../lib/validate";
 import { trpc } from "../../../utils/trpc";
 import { useRouter } from "next/router";
 import { LoadingButton } from "../loader/LoadingButton";
-import { CreateUserInput } from "../../../server/schema/user.schema";
+import type { CreateUserInput } from "../../../server/schema/user.schema";
 import { FaInfoCircle } from "react-icons/fa";
 
 const RegisterSection: React.FC = () => {
@@ -38,7 +38,7 @@ const RegisterSection: React.FC = () => {
       name: "",
       email: "",
       password: "",
-      cpassword: "",
+      cPassword: "",
     },
     validate: registerValidate,
     onSubmit: async (values: CreateUserInput) => {
@@ -205,19 +205,19 @@ const RegisterSection: React.FC = () => {
             </div>
 
             <div className="flex flex-col gap-2 pb-2">
-              <label className="font-bold text-primary-100" htmlFor="cpassword">
+              <label className="font-bold text-primary-100" htmlFor="cPassword">
                 Confirmar Contraseña
               </label>
               <input
                 className="rounded-lg border-b"
                 type="password"
-                id="cpassword"
+                id="cPassword"
                 placeholder="Tu contraseña aquí"
-                {...formik.getFieldProps("cpassword")}
+                {...formik.getFieldProps("cPassword")}
               />
               <span className="h-1 self-end text-right  text-sm text-red-500">
-                {formik.touched.cpassword && formik.errors.cpassword
-                  ? formik.errors.cpassword
+                {formik.touched.cPassword && formik.errors.cPassword
+                  ? formik.errors.cPassword
                   : "\u00A0"}
               </span>
             </div>

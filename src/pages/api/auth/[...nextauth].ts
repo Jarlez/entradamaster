@@ -38,10 +38,8 @@ export const authOptions: NextAuthOptions = {
         const user = await prisma.user.findUnique({
           where: { email: credentials.email },
         });
-        console.log("Tentando login com:", credentials);
-        console.log("Usuário encontrado:", user);
-        console.log("Senha salva no banco:", user?.password);
 
+        // Evite qualquer log de senha (mesmo hasheada)
         if (!user || !user.password) {
           throw new Error("Usuário ou senha incorretos.");
         }
@@ -50,6 +48,7 @@ export const authOptions: NextAuthOptions = {
           credentials.password,
           user.password
         );
+
         if (!passwordMatches) {
           throw new Error("Usuário ou senha incorretos.");
         }

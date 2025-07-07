@@ -58,7 +58,9 @@ export const authOptions: NextAuthOptions = {
   ],
 
   pages: {
-    newUser: "/auth",
+    signIn: "/login",
+  newUser: "/auth",
+  error: "/login?error=1",
   },
 
   callbacks: {
@@ -69,9 +71,14 @@ export const authOptions: NextAuthOptions = {
     async session({ session, user }) {
       if (session.user) {
         session.user.id = user.id;
-        session.user.role = (user as PrismaUser).role; // garante que o campo `role` é preenchido corretamente
+        session.user.role = (user as PrismaUser).role;
       }
       return session;
+    },
+
+    async redirect({ baseUrl }) {
+      // Redireciona sempre para /user após login, ignorando URL de origem
+      return `${baseUrl}/user`;
     },
   },
 };

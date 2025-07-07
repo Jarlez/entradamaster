@@ -1,5 +1,6 @@
 import React from "react";
-import Image, { StaticImageData } from "next/image";
+import type { StaticImageData } from "next/image";
+import Image from "next/image";
 
 import { BiTimeFive } from "react-icons/bi";
 import { CiLocationOn } from "react-icons/ci";

@@ -13,8 +13,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
   pageProps: { session, ...pageProps },
 }) => {
   return (
-    <UserTypeProvider>
-      <SessionProvider session={session}>
+    <SessionProvider session={session}>
+      <UserTypeProvider>
         <NextNProgress
           color="orange"
           options={{
@@ -22,8 +22,8 @@ const MyApp: AppType<{ session: Session | null }> = ({
           }}
         />
         <Component {...pageProps} />
-      </SessionProvider>
-    </UserTypeProvider>
+      </UserTypeProvider>
+    </SessionProvider>
   );
 };
 

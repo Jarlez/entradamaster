@@ -1,3 +1,5 @@
+// src/components/principal/login/LoginSection.tsx
+
 import React from "react";
 import Image from "next/image";
 import Link from "next/link";
@@ -24,15 +26,13 @@ const LoginSection: React.FC = () => {
     onSubmit,
   });
 
-  console.log(formik.errors);
-
-  async function onSubmit(values: { password: string; email: string }) {
+  async function onSubmit(values: { email: string; password: string }) {
     if (
       values.email === "admin@entradamaster.com" &&
       values.password === "12345678"
     ) {
       setUserType("admin");
-      router.push("/dashboard");
+      await router.push("/dashboard");
       return;
     }
 
@@ -40,11 +40,11 @@ const LoginSection: React.FC = () => {
       redirect: false,
       email: values.email,
       password: values.password,
-      callbackUrl: "/",
+      callbackUrl: "/user", // ✅ define o destino pós-login
     });
 
     if (result?.ok) {
-      router.push(result.url ?? "/");
+      router.replace(result.url ?? "/user"); // ✅ redirecionamento seguro
     } else {
       formik.setErrors({ email: "Correo o contraseña incorrectos" });
     }
@@ -59,10 +59,10 @@ const LoginSection: React.FC = () => {
           layout="fill"
           objectFit="cover"
           quality={100}
-          className="-z-10 brightness-50 "
+          className="-z-10 brightness-50"
         />
 
-        <Link href={"/"}>
+        <Link href="/">
           <div className="absolute top-6 left-6 w-[5rem]">
             <Image src={logo} alt="logo" />
           </div>
@@ -81,15 +81,9 @@ const LoginSection: React.FC = () => {
             Iniciar sesión
           </h2>
 
-          <form
-            className="mt-10 flex flex-col gap-5"
-            onSubmit={formik.handleSubmit}
-          >
+          <form className="mt-10 flex flex-col gap-5" onSubmit={formik.handleSubmit}>
             <div className="flex flex-col gap-2">
-              <label
-                className="text-xl font-bold text-primary-100"
-                htmlFor="correo"
-              >
+              <label className="text-xl font-bold text-primary-100" htmlFor="email">
                 Correo Electrónico
               </label>
               <input
@@ -99,21 +93,15 @@ const LoginSection: React.FC = () => {
                 placeholder="Tu correo aquí"
                 {...formik.getFieldProps("email")}
               />
-              {formik.errors.email && formik.touched.email ? (
-                <span className="-my-2 text-red-500">
-                  {formik.errors.email}
-                </span>
-              ) : null}
+              {formik.errors.email && formik.touched.email && (
+                <span className="-my-2 text-red-500">{formik.errors.email}</span>
+              )}
             </div>
 
             <div className="flex flex-col gap-2">
-              <label
-                className="text-xl font-bold text-primary-100 "
-                htmlFor="contrasena"
-              >
+              <label className="text-xl font-bold text-primary-100" htmlFor="password">
                 Contraseña
               </label>
-
               <input
                 className="rounded-lg border-b"
                 type="password"
@@ -121,46 +109,42 @@ const LoginSection: React.FC = () => {
                 placeholder="Tu contraseña aquí"
                 {...formik.getFieldProps("password")}
               />
-              {formik.errors.password && formik.touched.password ? (
-                <span className="-my-2 text-red-500">
-                  {formik.errors.password}
-                </span>
-              ) : null}
+              {formik.errors.password && formik.touched.password && (
+                <span className="-my-2 text-red-500">{formik.errors.password}</span>
+              )}
             </div>
 
-            <button
-              type="submit"
-              className="rounded-lg bg-primary-100 py-3 text-xl font-bold text-white"
-            >
+            <button type="submit" className="rounded-lg bg-primary-100 py-3 text-xl font-bold text-white">
               Ingresar
             </button>
           </form>
-          <div className="flex flex-col p-9 ">
+
+          <div className="flex flex-col p-9">
             <button
               className="btn-warning btn my-2 flex bg-white"
               onClick={() => {
-                signIn("google", { callbackUrl: "/" });
+                signIn("google", { callbackUrl: "/user" }); // ✅ redirecionamento correto
               }}
             >
               <div className="flex items-center justify-center">
                 <FcGoogle className="mr-2 text-4xl" />
-                <span className="text-left text-black">
-                  Iniciar Sesion con Google
-                </span>
+                <span className="text-left text-black">Iniciar Sesión con Google</span>
               </div>
             </button>
+
             <button
-              className="btn-warning btn btn my-2 bg-[#3b5998] text-white"
+              className="btn-warning btn my-2 bg-[#3b5998] text-white"
               onClick={() => {
-                signIn("facebook", { callbackUrl: "/" });
+                signIn("facebook", { callbackUrl: "/user" }); // ✅ redirecionamento correto
               }}
             >
               <div className="flex items-center justify-center">
                 <AiFillFacebook className="mr-2 text-4xl" />
-                <span className="text-left">Iniciar Sesion con Facebook</span>
+                <span className="text-left">Iniciar Sesión con Facebook</span>
               </div>
             </button>
           </div>
+
           <Link href="/register">
             <div className="text-center text-primary-100">
               ¿Todavía no tienes una cuenta?

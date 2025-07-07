@@ -1,7 +1,8 @@
 // src/pages/api/task/expire-orders.ts
 
-import { expireOldOrdersJob } from "@/jobs/expireOldOrders.job";
 import type { NextApiRequest, NextApiResponse } from "next";
+import { expireOldOrdersJob } from "@/jobs/expireOldOrders.job";
+import { logger } from "@/server/logging";
 
 // 🔐 Endpoint seguro para rodar o job via cron (requer x-api-key)
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
@@ -17,9 +18,9 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
   try {
     await expireOldOrdersJob();
-    res.status(200).json({ message: "✅ Expired old orders successfully" });
+    return res.status(200).json({ message: "✅ Expired old orders successfully" });
   } catch (error) {
-    console.error("❌ Failed to expire orders:", error);
-    res.status(500).json({ error: "Failed to process expired orders" });
+    logger.error("❌ Failed to expire orders", { error });
+    return res.status(500).json({ error: "Failed to process expired orders" });
   }
 }

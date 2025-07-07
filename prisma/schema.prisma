@@ -137,19 +137,19 @@ model Notification {
 }
 
 model Order {
-  id        String      @id @default(cuid())
-  createdAt DateTime    @default(now())
-  status    OrderStatus @default(PENDING)
-  total     Float
-  userId    String
-  eventId   String
-  expiresAt DateTime
+  id         String      @id @default(cuid())
+  createdAt  DateTime    @default(now())
+  status     OrderStatus @default(PENDING)
+  total      Float
+  userId     String
+  eventId    String
+  expiresAt  DateTime    @default(dbgenerated("NOW() + INTERVAL '10 minutes'"))
 
-  user    User        @relation(fields: [userId], references: [id])
-  event   Event       @relation(fields: [eventId], references: [id])
-  items   OrderItem[]
-  Payment Payment[]
-  Invoice Invoice[]
+  user       User        @relation(fields: [userId], references: [id])
+  event      Event       @relation(fields: [eventId], references: [id])
+  items      OrderItem[]
+  Payment    Payment[]
+  Invoice    Invoice[]
 
   @@index([userId])
   @@index([eventId])
@@ -163,10 +163,10 @@ model OrderItem {
   orderId          String
   ticketCategoryId String
 
-  category       Category       @relation(fields: [categoryId], references: [id])
-  order          Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
-  TicketCategory TicketCategory @relation(fields: [ticketCategoryId], references: [id])
-  Ticket         Ticket[]
+  category         Category       @relation(fields: [categoryId], references: [id])
+  order            Order          @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  TicketCategory   TicketCategory @relation(fields: [ticketCategoryId], references: [id])
+  Ticket           Ticket[]
 }
 
 model TicketCategory {

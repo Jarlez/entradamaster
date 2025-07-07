@@ -2,9 +2,7 @@ import { prisma } from "@/server/db/client";
 import { TRPCError } from "@trpc/server";
 import { generateTicketAssets } from "./ticket/ticketGeneration.service";
 
-/**
- * Generate and persist a ticket with assets (QR, PDF, Wallet)
- */
+// Generate and persist a ticket with assets (QR, PDF, Wallet)
 export async function generateAndSaveTicket(
   orderItemId: string,
   orderId: string,
@@ -37,31 +35,31 @@ export async function generateAndSaveTicket(
   }
 }
 
-/**
- * Generate all tickets from order
- */
+// Generate all tickets for a given order
 export async function generateTicketsFromOrder(order: {
   id: string;
-  items: {
-    id: string;
-    quantity: number;
-  }[];
+  items: { id: string; quantity: number }[];
 }) {
-  const createdTickets = [];
+  try {
+    const createdTickets = await Promise.all(
+      order.items.flatMap((item) =>
+        Array.from({ length: item.quantity }).map(() =>
+          generateAndSaveTicket(item.id, order.id)
+        )
+      )
+    );
 
-  for (const item of order.items) {
-    for (let i = 0; i < item.quantity; i++) {
-      const ticket = await generateAndSaveTicket(item.id, order.id);
-      createdTickets.push(ticket);
-    }
+    return createdTickets;
+  } catch (error) {
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to generate tickets from order.",
+      cause: error,
+    });
   }
-
-  return createdTickets;
 }
 
-/**
- * List all tickets for a given order item
- */
+// List all tickets for a given order item
 export async function getTicketsByOrderItemService(orderItemId: string) {
   if (!orderItemId) {
     throw new TRPCError({
@@ -75,14 +73,28 @@ export async function getTicketsByOrderItemService(orderItemId: string) {
   });
 }
 
-/**
- * Mark a ticket as used (entrance validation)
- */
+// Mark a ticket as used (entrance validation)
 export async function markTicketAsUsedService(ticketId: string) {
   if (!ticketId) {
     throw new TRPCError({
       code: "BAD_REQUEST",
       message: "Missing ticketId",
+    });
+  }
+
+  const ticket = await prisma.ticket.findUnique({ where: { id: ticketId } });
+
+  if (!ticket) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Ticket not found.",
+    });
+  }
+
+  if (ticket.usedAt) {
+    throw new TRPCError({
+      code: "BAD_REQUEST",
+      message: "Ticket has already been used.",
     });
   }
 
@@ -92,9 +104,7 @@ export async function markTicketAsUsedService(ticketId: string) {
   });
 }
 
-/**
- * Validate a ticket using its QR code ID (part of the URL)
- */
+// Validate a ticket using its QR code ID (from the URL)
 export async function validateTicketByQrService(qrCodeId: string) {
   if (!qrCodeId || typeof qrCodeId !== "string") {
     throw new TRPCError({

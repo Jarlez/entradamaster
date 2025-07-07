@@ -1,3 +1,5 @@
+// src/server/services/ticketGeneration.service.ts
+
 import { createWriteStream, existsSync, mkdirSync } from "fs";
 import path from "path";
 import QRCode from "qrcode";
@@ -8,7 +10,7 @@ import type { Prisma } from "@prisma/client";
 
 type TicketAsset = {
   qrCodeUrl: string;
-  pdfUrl?: string;
+  pdfUrl: string;
   walletPassUrl?: string;
 };
 
@@ -17,10 +19,13 @@ interface TicketData {
   userName?: string;
 }
 
-//Generates all assets for a ticket: QR code image, PDF with embedded QR, and (optionally) wallet pass.
+/**
+ * 🎟️ Generates QR code + PDF assets for a ticket.
+ * Output: /public/tickets/<ticketId>-qr.png and <ticketId>.pdf
+ */
 export async function generateTicketAssets(
   orderId: string,
-  tx: Prisma.TransactionClient, // Explicit and safe for use with Prisma $transaction
+  tx: Prisma.TransactionClient,
   ticketData: TicketData
 ): Promise<TicketAsset> {
   const ticketId = createId();
@@ -30,27 +35,27 @@ export async function generateTicketAssets(
   try {
     if (!existsSync(ticketsDir)) {
       mkdirSync(ticketsDir, { recursive: true });
-      logger.info("Created directory: /public/tickets");
+      logger.info("📁 Created directory: /public/tickets");
     }
   } catch (err) {
-    logger.error("Failed to create tickets directory:", err);
-    throw new Error("Failed to initialize ticket storage directory.");
+    logger.error("❌ Failed to create tickets directory:", err);
+    throw new Error("Ticket directory initialization failed.");
   }
 
-  // Generate QR code
+  // === Generate QR Code ===
   const qrFilename = `${ticketId}-qr.png`;
   const qrPath = path.join(ticketsDir, qrFilename);
   const qrCodeUrl = `/tickets/${qrFilename}`;
-  const qrCodeContent = `https://entrada.app/validate/${ticketId}`;
+  const qrContent = `https://entrada.app/validate/${ticketId}`;
 
   try {
-    await QRCode.toFile(qrPath, qrCodeContent);
+    await QRCode.toFile(qrPath, qrContent);
   } catch (err) {
-    logger.error("Failed to generate QR code:", err);
+    logger.error("❌ QR code generation failed:", err);
     throw new Error("QR code generation failed.");
   }
 
-  // Generate PDF with ticket details
+  // === Generate PDF ===
   const pdfFilename = `${ticketId}.pdf`;
   const pdfPath = path.join(ticketsDir, pdfFilename);
   const pdfUrl = `/tickets/${pdfFilename}`;
@@ -60,25 +65,35 @@ export async function generateTicketAssets(
     const stream = createWriteStream(pdfPath);
     doc.pipe(stream);
 
-    doc.fontSize(20).text("Your Ticket", { underline: true });
+    doc.fontSize(20).text("🎫 EntradaMaster Ticket", { underline: true });
     doc.moveDown();
-    doc.fontSize(12).text(`Order: ${ticketData.orderId}`);
+    doc.fontSize(12).text(`Order ID: ${ticketData.orderId}`);
     if (ticketData.userName) {
       doc.text(`Name: ${ticketData.userName}`);
     }
-    doc.image(qrPath, { width: 150, align: "center" });
+
+    doc.image(qrPath, {
+      width: 150,
+      align: "center",
+    });
 
     doc.end();
+
+    // Wait for stream to finish writing PDF
+    await new Promise<void>((resolve, reject) => {
+      stream.on("finish", resolve);
+      stream.on("error", reject);
+    });
   } catch (err) {
-    logger.error("Failed to generate PDF ticket:", err);
-    throw new Error("PDF ticket generation failed.");
+    logger.error("❌ PDF ticket generation failed:", err);
+    throw new Error("PDF generation failed.");
   }
 
-  logger.info({ ticketId, qrCodeUrl, pdfUrl }, "Ticket assets generated successfully");
+  logger.info({ ticketId, qrCodeUrl, pdfUrl }, "✅ Ticket assets generated");
 
   return {
     qrCodeUrl,
     pdfUrl,
-    walletPassUrl: undefined, // Reserved for future Apple/Google Wallet integration
+    walletPassUrl: undefined, // Placeholder for future .pkpass
   };
 }

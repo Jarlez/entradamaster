@@ -20,9 +20,7 @@ import {
 } from "@/server/services/ticket.service";
 
 export const ticketRouter = createTRPCRouter({
-  /**
-   * 🔐 Generate a new ticket and save assets (QR, PDF, Wallet)
-   */
+  // Generate a new ticket and save assets (QR, PDF, Wallet)
   create: protectedProcedure
     .input(
       z.object({
@@ -35,27 +33,21 @@ export const ticketRouter = createTRPCRouter({
       generateAndSaveTicket(input.orderItemId, input.orderId, input.userName)
     ),
 
-  /**
-   * 🔐 Get all tickets by order item ID
-   */
+  // Get all tickets by order item ID
   getByOrderItem: protectedProcedure
     .input(getTicketsByOrderItemSchema)
     .query(({ input }) =>
       getTicketsByOrderItemService(input.orderItemId)
     ),
 
-  /**
-   * 🔐 Mark a ticket as used
-   */
+  // Mark a ticket as used
   markAsUsed: protectedProcedure
     .input(markTicketAsUsedSchema)
     .mutation(({ input }) =>
       markTicketAsUsedService(input.ticketId)
     ),
 
-  /**
-   * 🌐 Validate ticket by QR ID (public for entrance scanning)
-   */
+  // Validate ticket by QR ID (public for entrance scanning)
   validateByQrId: publicProcedure
     .input(
       z.object({

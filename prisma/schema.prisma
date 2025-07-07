@@ -177,22 +177,26 @@ model TicketCategory {
   eventId    String
   event      Event       @relation(fields: [eventId], references: [id])
   orderItems OrderItem[]
+
+  @@index([eventId])
 }
 
 model Ticket {
   id            String    @id @default(cuid())
-  orderItemId   String
+  orderItemId   String    @unique // Garante 1:1 entre OrderItem e Ticket
   qrCodeUrl     String
   pdfUrl        String?
   walletPassUrl String?
   usedAt        DateTime?
   validatedById String?
   device        String?
+
   orderItem     OrderItem @relation(fields: [orderItemId], references: [id])
   validatedBy   User?     @relation("UserValidatedTickets", fields: [validatedById], references: [id])
 
   @@index([orderItemId])
 }
+
 
 model Payment {
   id          String          @id @default(cuid())

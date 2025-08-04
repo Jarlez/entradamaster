@@ -18,11 +18,19 @@ const Home: NextPage = () => {
   const router = useRouter();
 
   useEffect(() => {
-    if (status === "authenticated" && session?.user?.role === "ADMIN") {
+    const alreadyRedirected = sessionStorage.getItem("admin_redirected");
+
+    if (
+      router.isReady &&
+      status === "authenticated" &&
+      session?.user?.role === "ADMIN" &&
+      router.pathname === "/" &&
+      !alreadyRedirected
+    ) {
+      sessionStorage.setItem("admin_redirected", "true");
       router.replace("/dashboard");
     }
-  }, [status, session, router]);
-
+  }, [router.isReady, status, session, router]);
 
   if (status === "loading") {
     return (

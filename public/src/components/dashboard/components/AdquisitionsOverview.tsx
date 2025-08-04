@@ -1,5 +1,25 @@
 import React from "react";
 
+const renderStatus = (percentage: number) => {
+  if (percentage < 30) {
+    return (
+      <span className="ml-2 rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-700">
+        Venta baja
+      </span>
+    );
+  }
+
+  if (percentage >= 80) {
+    return (
+      <span className="ml-2 rounded bg-yellow-100 px-2 py-1 text-xs font-semibold text-yellow-700">
+        Casi agotado
+      </span>
+    );
+  }
+
+  return null;
+};
+
 const AdquisitionsOverview = () => {
   return (
     <div className="rounded-lg bg-white p-4 shadow sm:p-6 xl:p-8 ">
@@ -25,11 +45,14 @@ const AdquisitionsOverview = () => {
                 Queen
               </th>
               <td className="whitespace-nowrap border-t-0 p-4 px-4 align-middle text-xs font-medium text-gray-900">
-                5,649
+                5,300
               </td>
               <td className="whitespace-nowrap border-t-0 p-4 px-4 align-middle text-xs">
                 <div className="flex items-center">
-                  <span className="mr-2 text-xs font-medium">30%</span>
+                  <span className="mr-2 flex items-center text-xs font-medium">
+                    29%
+                    {renderStatus(29)}
+                  </span>
                   <div className="relative w-full">
                     <div className="h-2 w-full rounded-sm bg-gray-200">
                       <div

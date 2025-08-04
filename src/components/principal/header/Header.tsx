@@ -28,7 +28,6 @@ interface Props {
 }
 
 const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
-
   const router = useRouter();
 
   const handleLogout = () => {
@@ -153,7 +152,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                     <>
                       <div className="h-[33px] w-[33px]"></div>
                       <AiOutlineClose
-                        className="fixed top-[70px] left-[40px] cursor-pointer"
+                        className="fixed left-[40px] top-[70px] cursor-pointer"
                         size={30}
                         style={{ color: `black` }}
                       />
@@ -170,8 +169,8 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                 <div
                   className={
                     nav
-                      ? "fixed top-0 left-0 right-0 bottom-0 z-40 hidden h-screen w-[30%] flex-col items-center justify-between bg-[#ffff] text-center duration-300 ease-in lg:flex"
-                      : "fixed top-0 left-[-100%] right-0 bottom-0 z-40 hidden h-screen w-[30%] flex-col items-center justify-between bg-[#ffff] text-center duration-300 ease-in lg:flex"
+                      ? "fixed bottom-0 left-0 right-0 top-0 z-40 hidden h-screen w-[30%] flex-col items-center justify-between bg-[#ffff] text-center duration-300 ease-in lg:flex"
+                      : "fixed bottom-0 left-[-100%] right-0 top-0 z-40 hidden h-screen w-[30%] flex-col items-center justify-between bg-[#ffff] text-center duration-300 ease-in lg:flex"
                   }
                 >
                   <div className="h-[10%]"></div>
@@ -182,7 +181,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                         name="search"
                         id="search"
                         placeholder="Empezá a buscar tus eventos..."
-                        className="mr-3 w-full appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-700 focus:outline-none"
+                        className="mr-3 w-full appearance-none border-none bg-transparent px-2 py-1 leading-tight text-gray-700 focus:outline-none"
                       />
                       <AiOutlineSearch className={style.icon} />
                     </li>
@@ -191,7 +190,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                         <Link href="/login">
                           <div
                             onClick={handleNav}
-                            className="my-3 flex cursor-pointer items-center justify-center rounded-md border-2 border-black bg-[#ff6c00] py-4 px-9 text-xl text-[#ffff]"
+                            className="my-3 flex cursor-pointer items-center justify-center rounded-md border-2 border-black bg-[#ff6c00] px-9 py-4 text-xl text-[#ffff]"
                           >
                             <AiOutlineUser size={30} />
                             Iniciar sesión
@@ -203,7 +202,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                     <Link href="#">
                       <li
                         onClick={handleNav}
-                        className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] py-4 px-9 text-xl text-[#000000]"
+                        className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] px-9 py-4 text-xl text-[#000000]"
                       >
                         Eventos Hoy
                       </li>
@@ -211,13 +210,13 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
 
                     <li
                       onClick={handleNav}
-                      className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] py-4 px-9 text-xl text-[#000000]"
+                      className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] px-9 py-4 text-xl text-[#000000]"
                     >
                       <Link href="/">Artistas</Link>
                     </li>
                     <li
                       onClick={handleNav}
-                      className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] py-4 px-9 text-xl text-[#000000]"
+                      className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] px-9 py-4 text-xl text-[#000000]"
                     >
                       <Link href="/">Categorías</Link>
                     </li>
@@ -227,7 +226,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                   </p>
                 </div>
                 {nav ? (
-                  <div className="fixed top-0 left-0 z-20 h-screen w-full bg-black opacity-75"></div>
+                  <div className="fixed left-0 top-0 z-20 h-screen w-full bg-black opacity-75"></div>
                 ) : null}
               </>
             ) : null}
@@ -255,7 +254,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                       name="search"
                       id="search"
                       placeholder="Empezá a buscar tus eventos..."
-                      className="mr-3 w-full appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-700 outline-0 focus:outline-none"
+                      className="mr-3 w-full appearance-none border-none bg-transparent px-2 py-1 leading-tight text-gray-700 outline-0 focus:outline-none"
                     />
                     <AiOutlineSearch className={style.icon} />
                   </div>
@@ -317,7 +316,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                 </div>
                 <Link href="#">
                   <div className="relative">
-                    <div className="dropdown-left dropdown">
+                    <div className="dropdown dropdown-left">
                       <label tabIndex={0}>
                         <IoMdArrowDropdown className={style.icon} />
                       </label>
@@ -328,8 +327,17 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                         <p className="border-b py-2 text-center font-bold">
                           {session && session.user?.name}
                         </p>
+
+                        {session?.user?.role === "ADMIN" && (
+                          <li>
+                            <Link href="/dashboard">
+                              Panel de Administrador
+                            </Link>
+                          </li>
+                        )}
+
                         <li>
-                          <Link href={"/profile"}>Perfil</Link>
+                          <Link href="/profile">Perfil</Link>
                         </li>
                         <li onClick={() => signOut()}>
                           <span>Cerrar Sesión</span>
@@ -361,8 +369,8 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
           <div
             className={
               nav
-                ? "fixed top-0 left-0 right-0 bottom-0 z-40 flex h-screen w-full items-center justify-center bg-[#ffff] text-center duration-300 ease-in lg:hidden"
-                : "fixed top-0 left-[-100%] right-0 bottom-0 z-40 flex h-screen w-full items-center justify-center bg-[#ffff] text-center duration-300 ease-in lg:hidden"
+                ? "fixed bottom-0 left-0 right-0 top-0 z-40 flex h-screen w-full items-center justify-center bg-[#ffff] text-center duration-300 ease-in lg:hidden"
+                : "fixed bottom-0 left-[-100%] right-0 top-0 z-40 flex h-screen w-full items-center justify-center bg-[#ffff] text-center duration-300 ease-in lg:hidden"
             }
           >
             <ul>
@@ -372,7 +380,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                   name="search"
                   id="search"
                   placeholder="Empezá a buscar tus eventos..."
-                  className="mr-3 w-full appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-700 outline-0 focus:outline-none"
+                  className="mr-3 w-full appearance-none border-none bg-transparent px-2 py-1 leading-tight text-gray-700 outline-0 focus:outline-none"
                 />
                 <AiOutlineSearch className={style.icon} />
               </li>
@@ -381,7 +389,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                   <Link href="/login">
                     <div
                       onClick={handleNav}
-                      className="my-3 flex cursor-pointer items-center justify-center rounded-md border-2 border-black bg-[#ff6c00] py-4 px-9 text-xl text-[#ffff]"
+                      className="my-3 flex cursor-pointer items-center justify-center rounded-md border-2 border-black bg-[#ff6c00] px-9 py-4 text-xl text-[#ffff]"
                     >
                       <AiOutlineUser size={30} />
                       Iniciar sesión
@@ -393,7 +401,7 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                   <Link href="/profile">
                     <div
                       onClick={handleNav}
-                      className="my-3 flex cursor-pointer items-center justify-center rounded-md border-2 border-black bg-[#ff6c00] py-4 px-9 text-xl text-[#ffff]"
+                      className="my-3 flex cursor-pointer items-center justify-center rounded-md border-2 border-black bg-[#ff6c00] px-9 py-4 text-xl text-[#ffff]"
                     >
                       <AiOutlineUser size={30} />
                       Cuenta
@@ -404,20 +412,20 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
 
               <li
                 onClick={handleNav}
-                className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] py-4 px-9 text-xl text-[#000000]"
+                className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] px-9 py-4 text-xl text-[#000000]"
               >
                 <Link href="/">Eventos Hoy</Link>
               </li>
 
               <li
                 onClick={handleNav}
-                className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] py-4 px-9 text-xl text-[#000000]"
+                className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] px-9 py-4 text-xl text-[#000000]"
               >
                 <Link href="/">Artistas</Link>
               </li>
               <li
                 onClick={handleNav}
-                className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] py-4 px-9 text-xl text-[#000000]"
+                className="my-3 cursor-pointer rounded-md border-2 border-black bg-[#ffff] px-9 py-4 text-xl text-[#000000]"
               >
                 <Link href="/">Categorías</Link>
               </li>
@@ -427,9 +435,9 @@ const HeaderComponent = ({ home = false, buyPage = false }: Props) => {
                     signOut();
                     handleLogout();
                   }}
-                  className="my-3 cursor-pointer rounded-md border-2 border-black bg-red-500 py-4 px-9 text-xl text-white"
+                  className="my-3 cursor-pointer rounded-md border-2 border-black bg-red-500 px-9 py-4 text-xl text-white"
                 >
-                  Cerrar Sesión
+                  Cerrar Sesssssssssssión
                 </li>
               )}
             </ul>

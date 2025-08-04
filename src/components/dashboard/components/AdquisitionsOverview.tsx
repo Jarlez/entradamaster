@@ -1,6 +1,30 @@
 // src/components/dashboard/components/AdquisitionsOverview.tsx
 import React from "react";
 
+const renderStatus = (percentage: number) => {
+  if (percentage < 30) {
+    return (
+      <span className="ml-2 rounded bg-red-100 px-2 py-1 text-xs font-semibold text-red-700">
+        Venta baja
+      </span>
+    );
+  }
+
+  if (percentage >= 80) {
+    return (
+      <span className="ml-2 rounded bg-green-100 px-2 py-1 text-xs font-semibold text-green-700">
+        Casi agotado
+      </span>
+    );
+  }
+
+  return (
+    <span className="ml-2 rounded bg-blue-100 px-2 py-1 text-xs font-semibold text-blue-700">
+      Venta estable
+    </span>
+  );
+};
+
 const AdquisitionsOverview = () => {
   return (
     <div className="rounded-lg bg-white p-4 shadow sm:p-6 xl:p-8 ">
@@ -26,17 +50,19 @@ const AdquisitionsOverview = () => {
                 Queen
               </th>
               <td className="whitespace-nowrap border-t-0 p-4 px-4 align-middle text-xs font-medium text-gray-900">
-                5,649
+                5,630
               </td>
               <td className="whitespace-nowrap border-t-0 p-4 px-4 align-middle text-xs">
                 <div className="flex items-center">
-                  <span className="mr-2 text-xs font-medium">30%</span>
+                  <span className="mr-2 text-xs font-medium">
+                    {renderStatus(88)} 88%
+                  </span>
                   <div className="relative w-full">
                     <div className="h-2 w-full rounded-sm bg-gray-200">
                       <div
                         className="h-2 rounded-sm bg-cyan-600"
                         style={{
-                          width: "30%",
+                          width: "88%",
                         }}
                       ></div>
                     </div>
@@ -53,13 +79,16 @@ const AdquisitionsOverview = () => {
               </td>
               <td className="whitespace-nowrap border-t-0 p-4 px-4 align-middle text-xs">
                 <div className="flex items-center">
-                  <span className="mr-2 text-xs font-medium">24%</span>
+                  <span className="mr-2 text-xs font-medium">
+                    {" "}
+                    {renderStatus(81)} 81%
+                  </span>
                   <div className="relative w-full">
                     <div className="h-2 w-full rounded-sm bg-gray-200">
                       <div
                         className="h-2 rounded-sm bg-orange-300"
                         style={{
-                          width: "24%",
+                          width: "81%",
                         }}
                       ></div>
                     </div>
@@ -76,13 +105,16 @@ const AdquisitionsOverview = () => {
               </td>
               <td className="whitespace-nowrap border-t-0 p-4 px-4 align-middle text-xs">
                 <div className="flex items-center">
-                  <span className="mr-2 text-xs font-medium">18%</span>
+                  <span className="mr-2 text-xs font-medium">
+                    {" "}
+                    {renderStatus(50)} 50%
+                  </span>
                   <div className="relative w-full">
                     <div className="h-2 w-full rounded-sm bg-gray-200">
                       <div
                         className="h-2 rounded-sm bg-teal-400"
                         style={{
-                          width: "18%",
+                          width: "50%",
                         }}
                       ></div>
                     </div>
@@ -99,13 +131,16 @@ const AdquisitionsOverview = () => {
               </td>
               <td className="whitespace-nowrap border-t-0 p-4 px-4 align-middle text-xs">
                 <div className="flex items-center">
-                  <span className="mr-2 text-xs font-medium">12%</span>
+                  <span className="mr-2 text-xs font-medium">
+                    {" "}
+                    {renderStatus(33)} 33%
+                  </span>
                   <div className="relative w-full">
                     <div className="h-2 w-full rounded-sm bg-gray-200">
                       <div
                         className="h-2 rounded-sm bg-pink-600"
                         style={{
-                          width: "12%",
+                          width: "33%",
                         }}
                       ></div>
                     </div>
@@ -122,13 +157,15 @@ const AdquisitionsOverview = () => {
               </td>
               <td className="whitespace-nowrap border-t-0 p-4 px-4 align-middle text-xs">
                 <div className="flex items-center">
-                  <span className="mr-2 text-xs font-medium">9%</span>
+                  <span className="mr-2 text-xs font-medium">
+                    {renderStatus(12)} 12%
+                  </span>
                   <div className="relative w-full">
                     <div className="h-2 w-full rounded-sm bg-gray-200">
                       <div
                         className="h-2 rounded-sm bg-indigo-600"
                         style={{
-                          width: "9%",
+                          width: "12%",
                         }}
                       ></div>
                     </div>
@@ -145,13 +182,15 @@ const AdquisitionsOverview = () => {
               </td>
               <td className="whitespace-nowrap border-t-0 p-4 pb-0 align-middle text-xs">
                 <div className="flex items-center">
-                  <span className="mr-2 text-xs font-medium">7%</span>
+                  <span className="mr-2 text-xs font-medium">
+                    {renderStatus(6)} 6%
+                  </span>
                   <div className="relative w-full">
                     <div className="h-2 w-full rounded-sm bg-gray-200">
                       <div
                         className="h-2 rounded-sm bg-purple-500"
                         style={{
-                          width: "9%",
+                          width: "6%",
                         }}
                       ></div>
                     </div>

@@ -10,7 +10,12 @@ import { EventStatus } from "@prisma/client";
 import { trpc } from "@/utils/trpc";
 import { supabase } from "@/lib/supabaseClient";
 
-const FIXED_TICKET_TYPES = ["Platea A", "Platea B", "Platea C", "Pullman"] as const;
+const FIXED_TICKET_TYPES = [
+  "Platea A",
+  "Platea B",
+  "Platea C",
+  "Pullman",
+] as const;
 type FixedType = (typeof FIXED_TICKET_TYPES)[number];
 
 const eventSchema = z.object({
@@ -38,6 +43,7 @@ const eventSchema = z.object({
     z.object({
       title: z.enum(FIXED_TICKET_TYPES),
       price: z.number().min(1),
+      quantity: z.number().min(0),
     })
   ),
 });
@@ -51,7 +57,9 @@ export default function CreateEventPage() {
   const [sessions, setSessions] = useState<EventFormInput["sessions"]>([
     { date: "", city: "", venueName: "" },
   ]);
-  const [tickets, setTickets] = useState<EventFormInput["ticketCategories"]>([]);
+  const [tickets, setTickets] = useState<EventFormInput["ticketCategories"]>(
+    []
+  );
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [categoryId, setCategoryId] = useState("");
@@ -73,6 +81,9 @@ export default function CreateEventPage() {
     mode: "onTouched",
   });
 
+  const inputClass =
+    "w-full rounded border px-4 py-2 focus:outline-none focus:ring-2 focus:ring-primary-100 focus:border-primary-200 placeholder-gray-400";
+
   const uploadImage = async (): Promise<string | undefined> => {
     if (!imageFile) return imagePreview ?? undefined;
     const fileName = `${Date.now()}-${imageFile.name}`;
@@ -86,7 +97,8 @@ export default function CreateEventPage() {
   const handleSubmit = async () => {
     if (!session?.user?.id) return alert("Usuário não autenticado");
     if (!categoryId) return alert("Categoria obrigatória");
-    if (!tickets.length) return alert("Adicione pelo menos um tipo de ingresso");
+    if (!tickets.length)
+      return alert("Adicione pelo menos um tipo de ingresso");
 
     const raw = getValues();
     let image: string | undefined = undefined;
@@ -127,120 +139,200 @@ export default function CreateEventPage() {
   };
 
   return (
-    <div className="max-w-2xl mx-auto px-4 py-10">
-      <h1 className="text-2xl font-bold mb-6">Criar Evento</h1>
+    <div className="mx-auto max-w-4xl px-6 py-10">
+      <h1 className="mb-8 text-3xl font-bold text-gray-800">Criar Evento</h1>
 
-      <form onSubmit={(e) => e.preventDefault()} className="space-y-6">
-        <input {...register("name")} placeholder="Nome do evento" className="input" />
-        <input {...register("description")} placeholder="Descrição" className="input" />
-        <input {...register("slug")} placeholder="Slug" className="input" />
-        <input {...register("street")} placeholder="Rua" className="input" />
-        <input {...register("number")} placeholder="Número" className="input" />
-        <input {...register("neighborhood")} placeholder="Bairro" className="input" />
-        <input {...register("city")} placeholder="Cidade" className="input" />
-        <input {...register("state")} placeholder="Estado" className="input" />
-        <input {...register("zipCode")} placeholder="CEP" className="input" />
-        <input {...register("venueName")} placeholder="Local" className="input" />
-        <input {...register("capacity", { valueAsNumber: true })} type="number" placeholder="Capacidade (1 a 150)" className="input" />
+      <form onSubmit={(e) => e.preventDefault()} className="space-y-10">
+        <div className="space-y-4 rounded-lg bg-white p-6 shadow">
+          <h2 className="text-xl font-semibold text-gray-700">
+            Informações Básicas
+          </h2>
+          <input
+            {...register("name" as const)}
+            placeholder="Nome do evento"
+            className={inputClass}
+          />
+          <input
+            {...register("description" as const)}
+            placeholder="Descrição"
+            className={inputClass}
+          />
+          <input
+            {...register("slug" as const)}
+            placeholder="Slug (URL amigável)"
+            className={inputClass}
+          />
+        </div>
 
-        <select
-          value={categoryId}
-          onChange={(e) => setCategoryId(e.target.value)}
-          className="input"
-        >
-          <option value="">Selecione categoria</option>
-          {categories.map((cat) => (
-            <option key={cat.id} value={cat.id}>
-              {cat.title}
-            </option>
-          ))}
-        </select>
+        <div className="space-y-4 rounded-lg bg-white p-6 shadow">
+          <h2 className="text-xl font-semibold text-gray-700">
+            Informações do evento
+          </h2>
+          <input
+            // {...register("name" as const)}
+            placeholder="Artistas do evento"
+            className={inputClass}
+          />
+          <input
+            {...register("venueName" as const)}
+            placeholder="Local do evento"
+            className={inputClass}
+          />
+          <input
+            {...register("capacity", { valueAsNumber: true })}
+            type="number"
+            placeholder="Capacidade (1 a 150)"
+            className={inputClass}
+          />
+        </div>
 
-        <input
-          type="file"
-          accept="image/*"
-          onChange={(e) => {
-            const file = e.target.files?.[0];
-            if (file) {
-              setImageFile(file);
-              setImagePreview(URL.createObjectURL(file));
-            }
-          }}
-          className="input"
-        />
-        {imagePreview && (
-          <div className="h-48 relative">
-            <Image src={imagePreview} alt="Preview" fill className="object-cover rounded" />
+        <div className="space-y-4 rounded-lg bg-white p-6 shadow">
+          <h2 className="text-xl font-semibold text-gray-700">Localização</h2>
+          <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+            <input
+              {...register("street" as const)}
+              placeholder="Rua"
+              className={inputClass}
+            />
+            <input
+              {...register("number" as const)}
+              placeholder="Número"
+              className={inputClass}
+            />
+            <input
+              {...register("neighborhood" as const)}
+              placeholder="Bairro"
+              className={inputClass}
+            />
+            <input
+              {...register("city" as const)}
+              placeholder="Cidade"
+              className={inputClass}
+            />
+            <input
+              {...register("state" as const)}
+              placeholder="Estado"
+              className={inputClass}
+            />
+            <input
+              {...register("zipCode" as const)}
+              placeholder="CEP"
+              className={inputClass}
+            />
           </div>
-        )}
+        </div>
 
-        <div>
-          <p className="font-semibold mb-2">Sessões</p>
+        <div className="space-y-4 rounded-lg bg-white p-6 shadow">
+          <h2 className="text-xl font-semibold text-gray-700">Categoria</h2>
+          <select
+            value={categoryId}
+            onChange={(e) => setCategoryId(e.target.value)}
+            className={inputClass}
+          >
+            <option value="">Selecione uma categoria</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.title}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="rounded-lg bg-white p-6 shadow">
+          <h2 className="mb-4 text-xl font-semibold text-gray-700">
+            Imagem do Evento
+          </h2>
+          <input
+            type="file"
+            accept="image/*"
+            onChange={(e) => {
+              const file = e.target.files?.[0];
+              if (file) {
+                setImageFile(file);
+                setImagePreview(URL.createObjectURL(file));
+              }
+            }}
+            className={inputClass}
+          />
+          {imagePreview && (
+            <div className="mt-4">
+              <p className="mb-2 text-sm text-gray-500">Pré-visualização:</p>
+              <div className="relative h-64 w-full overflow-hidden rounded">
+                <Image
+                  src={imagePreview}
+                  alt="Preview"
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="rounded-lg bg-white p-6 shadow">
+          <h2 className="mb-4 text-xl font-semibold text-gray-700">Sessões</h2>
           {sessions.map((s, i) => (
-            <div key={i} className="grid grid-cols-3 gap-2 mb-2">
+            <div key={i} className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
               <input
                 type="date"
-                className="input"
-                value={sessions[i]?.date ?? ""}
+                value={s.date}
                 onChange={(e) => {
-                  setSessions((prev) => {
-                    const updated = [...prev];
-                    if (updated[i]) updated[i].date = e.target.value;
-                    return updated;
-                  });
+                  const updated = [...sessions];
+                  updated[i].date = e.target.value;
+                  setSessions(updated);
                 }}
+                className={inputClass}
               />
               <input
                 placeholder="Cidade"
-                className="input"
-                value={sessions[i]?.city ?? ""}
+                value={s.city}
                 onChange={(e) => {
-                  setSessions((prev) => {
-                    const updated = [...prev];
-                    if (updated[i]) updated[i].city = e.target.value;
-                    return updated;
-                  });
+                  const updated = [...sessions];
+                  updated[i].city = e.target.value;
+                  setSessions(updated);
                 }}
+                className={inputClass}
               />
               <input
                 placeholder="Local"
-                className="input"
-                value={sessions[i]?.venueName ?? ""}
+                value={s.venueName}
                 onChange={(e) => {
-                  setSessions((prev) => {
-                    const updated = [...prev];
-                    if (updated[i]) updated[i].venueName = e.target.value;
-                    return updated;
-                  });
+                  const updated = [...sessions];
+                  updated[i].venueName = e.target.value;
+                  setSessions(updated);
                 }}
+                className={inputClass}
               />
             </div>
           ))}
           <button
             type="button"
             onClick={() =>
-              setSessions((prev) => [...prev, { date: "", city: "", venueName: "" }])
+              setSessions((prev) => [
+                ...prev,
+                { date: "", city: "", venueName: "" },
+              ])
             }
-            className="text-sm text-blue-600 underline mt-2"
+            className="text-sm text-blue-600 underline"
           >
             + Adicionar sessão
           </button>
         </div>
 
-        <div>
-          <p className="font-semibold mb-2">Ingressos</p>
+        <div className="rounded-lg bg-white p-6 shadow">
+          <h2 className="mb-4 text-xl font-semibold text-gray-700">
+            Ingressos
+          </h2>
           {tickets.map((ticket, i) => (
-            <div key={i} className="flex gap-2 mb-2">
+            <div key={i} className="mb-4 grid grid-cols-1 gap-4 md:grid-cols-3">
               <select
-                className="input"
-                value={tickets[i]?.title ?? "Platea A"}
+                value={ticket.title}
                 onChange={(e) => {
-                  setTickets((prev) => {
-                    const updated = [...prev];
-                    if (updated[i]) updated[i].title = e.target.value as FixedType;
-                    return updated;
-                  });
+                  const updated = [...tickets];
+                  updated[i].title = e.target.value as FixedType;
+                  setTickets(updated);
                 }}
+                className={inputClass}
               >
                 {FIXED_TICKET_TYPES.map((type) => (
                   <option key={type} value={type}>
@@ -248,26 +340,47 @@ export default function CreateEventPage() {
                   </option>
                 ))}
               </select>
+
               <input
                 type="number"
-                className="input"
-                value={tickets[i]?.price ?? ""}
+                placeholder="Quantidade"
+                value={ticket.quantity || ""}
                 onChange={(e) => {
-                  setTickets((prev) => {
-                    const updated = [...prev];
-                    if (updated[i]) updated[i].price = Number(e.target.value);
-                    return updated;
-                  });
+                  const updated = [...tickets];
+                  updated[i].quantity = Math.max(0, Number(e.target.value));
+                  setTickets(updated);
                 }}
+                className={inputClass}
+              />
+
+              <input
+                type="number"
+                value={ticket.price === 0 ? "" : ticket.price}
+                onChange={(e) => {
+                  const updated = [...tickets];
+                  updated[i].price =
+                    e.target.value === "" ? 0 : Number(e.target.value);
+                  setTickets(updated);
+                }}
+                placeholder="Preço"
+                className={inputClass}
               />
             </div>
           ))}
+
           <button
             type="button"
             onClick={() =>
-              setTickets((prev) => [...prev, { title: "Platea A", price: 0 }])
+              setTickets((prev) => [
+                ...prev,
+                {
+                  title: "Platea A",
+                  price: "" as unknown as number,
+                  quantity: 1,
+                },
+              ])
             }
-            className="text-sm text-blue-600 underline mt-2"
+            className="text-sm text-blue-600 underline"
           >
             + Adicionar ingresso
           </button>
@@ -277,7 +390,7 @@ export default function CreateEventPage() {
           <button
             type="button"
             onClick={handleSubmit}
-            className="bg-primary-100 text-white font-semibold px-6 py-2 rounded hover:bg-primary-200"
+            className="hover:bg-primary-200 rounded bg-primary-100 px-6 py-3 font-semibold text-white transition"
           >
             Criar Evento
           </button>

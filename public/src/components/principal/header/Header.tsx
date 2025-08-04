@@ -322,7 +322,7 @@ const HeaderComponent: React.FC<Props> = ({ home, buyPage }) => {
                           <Link href={"/profile"}>Perfil</Link>
                         </li>
                         <li onClick={() => signOut()}>
-                          <span>Cerrar Sesión</span>
+                          <span>Cerrar Sessón</span>
                         </li>
                       </ul>
                     </div>
